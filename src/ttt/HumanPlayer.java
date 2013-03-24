@@ -8,8 +8,9 @@ import java.util.Scanner;
  */
 public class HumanPlayer extends Player
 {
-    public HumanPlayer()
+    public HumanPlayer(playerRank rank)
     {
+        super(rank);
     }
     
     @Override

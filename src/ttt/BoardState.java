@@ -1,5 +1,6 @@
 package ttt;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 
 /**
@@ -15,7 +16,8 @@ public class BoardState
     private int id;
             
     private byte[] state;
-    private int[] logicCounter;
+    private int[] logicCounter_PlayerAlpha;
+    private int[] logicCounter_PlayerBeta;
     
     /**
      * Constructor for a new board state.
@@ -37,18 +39,20 @@ public class BoardState
     
     private void initializeLogic(byte[] layout)
     {
-        logicCounter = new int[]{10,10,10,10,10,10,10,10,10};
+        logicCounter_PlayerAlpha = new int[]{10,10,10,10,10,10,10,10,10};
+        logicCounter_PlayerBeta = new int[]{10,10,10,10,10,10,10,10,10};
         
         for(int i = 0; i < layout.length; i++)
         {
             if(layout[i]!=0) //Unavailable play
             {
-                logicCounter[i] = 0; 
+                logicCounter_PlayerAlpha[i] = 0;
+                logicCounter_PlayerBeta[i] = 0; 
             }
         }
     }
     /**
-     * Returns the logic counter of the board state.
+     * Returns Player One's logic counter of the board state.
      * The array stores values for each possible play based on previous game
      * outcomes. A higher number means the play has been more favorable and a
      * lower number means the play has been less favorable. 
@@ -59,23 +63,49 @@ public class BoardState
      *          each possible play
      */
     
-    public int[] getLogicCounter()
+    public int[] getPlayerAlphaLogicCounter()
     {
-        return logicCounter;
+        return logicCounter_PlayerAlpha;
+    }
+    
+    /**
+     * Returns Player Two's logic counter of the board state.
+     * The array stores values for each possible play based on previous game
+     * outcomes. A higher number means the play has been more favorable and a
+     * lower number means the play has been less favorable. 
+     * An invalid play has the value of 0.
+     * The lowest value a valid play can contain is 1.
+     * There is no upper bound limit for the value of a valid play.
+     * @return  the array containing the counts for 
+     *          each possible play
+     */
+    
+    public int[] getPlayerBetaLogicCounter()
+    {
+        return logicCounter_PlayerBeta;
     }
     
     /**
      * Updates the logic counter for the board state.
-     * @param location  The board location of the play to update.
-     * @param amount    The amount to change the value of the logic counter by.
+     * @param location          The board location of the play to update.
+     * @param amount            The amount to change the value of the logic counter by.
+     * @param playerToUpdate    One for player one, two for player two.
      */
        
-    public void changeLikelihood(int location, int amount)
+    public void changeLikelihood(int location, int amount, playerRank rank)
     {
         //Plays should remain valid, even if bad.
         //Only modify if the result will be at least 1.
-        if(logicCounter[location] + amount >= 1) 
-            logicCounter[location] += amount;
+        if(rank == playerRank.ALPHA)
+        {
+            if(logicCounter_PlayerAlpha[location] + amount >= 1) 
+                logicCounter_PlayerAlpha[location] += amount;
+        }
+        else if(rank == playerRank.BETA)
+        {
+            if(logicCounter_PlayerBeta[location] + amount >= 1) 
+                logicCounter_PlayerBeta[location] += amount;
+        }
     }
     /**
      * Returns the unique ID of the board state.

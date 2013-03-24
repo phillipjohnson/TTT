@@ -7,16 +7,24 @@ import java.util.Random;
  * @author Phillip Johnson
  */
 
+enum ComputerLogic
+{
+    RANDOM, LEARNER;
+}
+
 public class ComputerPlayer extends Player
 {
     private Random r;
+    private ComputerLogic logic;
     
     /**
      * Creates a new computer player.
      */
-    public ComputerPlayer()
+    public ComputerPlayer(ComputerLogic logic, playerRank rank)
     {
+        super(rank);
         r = new Random();
+        this.logic = logic;
     }
     
     @Override
@@ -24,17 +32,37 @@ public class ComputerPlayer extends Player
     {
         int myPlay = -1;
         
-        myPlay = bestPlay(bs, currentDisplay);
+        switch(logic)
+        {
+            case LEARNER:
+                myPlay = bestPlay(bs);
+                break;
+            case RANDOM:
+                myPlay = randomPlay(bs);
+                break;
+            default:
+                assert(false): logic;
+                break;
+
+        }
         
         return myPlay;
     }
     
-    private int randomPlay()
+    private int randomPlay(BoardState bs)
     {
-        return r.nextInt(9);
+        int playLocation = -1;
+        boolean validLocation = false;
+        while(!validLocation)
+        {
+            playLocation = r.nextInt(9);
+            validLocation = checkPlayAvailable(bs, playLocation);
+        }
+        
+        return playLocation;
     }
     
-    private int bestPlay(BoardState bs, byte[] currentDisplay)
+    private int bestPlay(BoardState bs)
     {
         int optimalPlay = retrieveOptimalPlayLocation(bs);
         return optimalPlay;
@@ -45,11 +73,29 @@ public class ComputerPlayer extends Player
         //Find matching board state
         BoardState matchingState = retrieveKnownBoardState(bs);
         //Find the highest value in the array
-        int[] logic = Arrays.copyOf(matchingState.getLogicCounter(),9);
-        Arrays.sort(logic);
-        int optimalPlayValue = logic[8];
+        int[] bsCounter = null;
+        
+        if(rank == playerRank.ALPHA)
+        {
+            bsCounter = Arrays.copyOf(matchingState.getPlayerAlphaLogicCounter(),9);
+        }
+        else if(rank == playerRank.BETA)
+        {
+            bsCounter = Arrays.copyOf(matchingState.getPlayerBetaLogicCounter(),9);
+        }
+        Arrays.sort(bsCounter);
+        int optimalPlayValue = bsCounter[8];
+        
         //Find a play with the highest value
-        logic = matchingState.getLogicCounter();
+        if(rank == playerRank.ALPHA)
+        {
+            bsCounter = matchingState.getPlayerAlphaLogicCounter();
+        }
+        else if(rank == playerRank.BETA)
+        {
+            bsCounter = matchingState.getPlayerBetaLogicCounter();
+        }
+
         int optimalPlayLocation = -1;
         boolean bestPlayFound = false;
         
@@ -58,7 +104,7 @@ public class ComputerPlayer extends Player
         while(!bestPlayFound)
         {
             int randomEntry = r.nextInt(9);
-            int playValueToCheck = logic[randomEntry]; //Select a random play
+            int playValueToCheck = bsCounter[randomEntry]; //Select a random play
             if(playValueToCheck == optimalPlayValue && checkPlayAvailable(bs, randomEntry))
             {
                 optimalPlayLocation = randomEntry;

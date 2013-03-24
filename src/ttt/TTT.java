@@ -1,5 +1,7 @@
 package ttt;
 
+import java.util.Scanner;
+
 /**
  * The code to run the game.
  * <p>
@@ -35,8 +37,69 @@ public class TTT
 {    
     public static void main(String[] args)
     {
-        Game game = new Game();
-        game.play();
+        TTT tic = new TTT();
+        int gameType = tic.getGameType();
         
+        Game game = null;
+        
+        switch(gameType)
+        {
+            case 1:
+                game = new Game_HvC();
+                break;
+            case 2:
+                game = new Game_CvC(ComputerLogic.LEARNER,ComputerLogic.RANDOM);
+                break;
+            case 3:
+                game = new Game_CvC(ComputerLogic.LEARNER,ComputerLogic.LEARNER);
+                break;
+            default:
+                assert(false) : gameType;
+                break;
+        }
+
+        if(game != null)
+        {
+            game.play();
+        }
+        
+    }
+    
+    public int getGameType()
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to a MENACE-style Java implementation of" + 
+                " Tic-Tac-Toe.\n");
+        System.out.println("Please select your method of play: \n\n" +
+                "(1) Human vs. Learning Computer\n" +
+                "(2) Learning Computer vs. Random Computer Simulation\n" +
+                "(3) Learning Computer vs. Learning Computer Simulation");
+        
+        int gameType = -1;
+        boolean validGameType = false;
+        
+        while(!validGameType)
+        {
+            if(!sc.hasNextInt())
+            {
+                System.out.println("Please enter a valid number.");
+                validGameType = false;
+            }
+            else
+            {
+                gameType = sc.nextInt();
+                if(gameType < 0 || gameType > 3)
+                {
+                    System.out.println("Please enter a valid game type.");
+                    validGameType = false;
+                }
+                else
+                {
+                    validGameType = true;
+                }
+            }
+        }
+        
+        return gameType;
     }
 }

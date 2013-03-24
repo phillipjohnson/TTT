@@ -2,6 +2,15 @@ package ttt;
 
 import java.util.Arrays;
 
+
+/**
+ * Enum that stores a unique player designation for the whole game
+ * @author Phillip Johnson
+ */
+enum playerRank
+{
+    ALPHA, BETA;
+}
 /**
  * The class that represents a TTT player.
  * @author Phillip Johnson
@@ -10,13 +19,14 @@ public abstract class Player
 {
     String symbol;
     public static final BoardStateChecker boardStateChecker = new BoardStateChecker();
+    playerRank rank;
     
     /**
      * Constructor of a Player
      */
-    public Player()
+    public Player(playerRank rank)
     {
-        
+        this.rank = rank;
     }
     /**
      * Sets the visual token to be used for this player's plays on the board.
@@ -239,7 +249,8 @@ public abstract class Player
         {
             locationAvailable = false;
             //mark the play as invalid for future
-            bs.getLogicCounter()[playLocation] = 0; 
+            bs.getPlayerAlphaLogicCounter()[playLocation] = 0;
+            bs.getPlayerBetaLogicCounter()[playLocation] = 0; 
         }
         else
             locationAvailable = true;

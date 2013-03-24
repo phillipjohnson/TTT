@@ -9,17 +9,17 @@ import java.util.Scanner;
  */
 public class GameRound
 {
-    private Player player1, player2;
-    private BoardState currentState;
+    Player player1, player2;
+    BoardState currentState;
     
-    private boolean victory;
-    private int turns;
+    boolean victory;
+    int turns;
     
-    private int[][] moveHistory = new int[9][2];
+    int[][] moveHistory = new int[9][2];
 
-    private static Game theGame = new Game();
-    private GameLogic gameLogic;
-    private static BoardStateChecker computerLogic;
+    static Game theGame = new Game_HvC();
+    GameLogic gameLogic;
+    static BoardStateChecker computerLogic;
     
     byte[] display = new byte[9];
     
@@ -29,13 +29,14 @@ public class GameRound
     public GameRound()
     {       
         gameLogic = new GameLogic();
-        computerLogic = ComputerPlayer.boardStateChecker;
+        computerLogic = Player.boardStateChecker;
     }
     /**
      * Sets up the details of the players for the round.
      */
     public void playRound()
     {
+        Game_HvC localGameRef = (Game_HvC)theGame;
         Scanner sc = new Scanner(System.in);
         
         String choice = "";
@@ -47,19 +48,21 @@ public class GameRound
             choice = sc.nextLine();
         }
         
-        theGame.getHumanPlayer().setPlayerSymbol(choice);
+        localGameRef.getHumanPlayer().setPlayerSymbol(choice);
         
         if(choice.equalsIgnoreCase("X"))
         {
-            theGame.getComputerPlayer().setPlayerSymbol("O");
-            player1 = theGame.getHumanPlayer();
-            player2 = theGame.getComputerPlayer();
+            
+            localGameRef.getComputerPlayer().setPlayerSymbol("O");
+            player1 = localGameRef.getHumanPlayer();
+            player2 = localGameRef.getComputerPlayer();
+            
         }
         else
         {
-            theGame.getComputerPlayer().setPlayerSymbol("X");
-            player1 = theGame.getComputerPlayer();
-            player2 = theGame.getHumanPlayer();
+            localGameRef.getComputerPlayer().setPlayerSymbol("X");
+            player1 = localGameRef.getComputerPlayer();
+            player2 = localGameRef.getHumanPlayer();
         }
         
         System.out.println("Use the numpad to make your plays. " + 
@@ -68,14 +71,15 @@ public class GameRound
         currentState = BoardStateChecker.getKnownBoardStates().get(15);
         display = new byte[]{0,0,0,0,0,0,0,0,0};
         
-        processTurns();
+        processTurns(true);
         processEndOfRound();
         
     }
     /**
      * Loops through the turns of the round.
+     * @param printDisplay  True to print the board after each play
      */
-    public void processTurns()
+    public void processTurns(boolean printDisplay)
     {
         turns = 0;
         victory = false;
@@ -113,7 +117,11 @@ public class GameRound
             
             display[displayPlayLocation] = currentPlayer.makeYerMark();
             
-            printBoard();
+            if(printDisplay)
+            {
+                printBoard();
+            }
+            
             victory = gameLogic.checkWin(display);
             turns++;
         }
@@ -168,13 +176,15 @@ public class GameRound
             System.out.println("The game ended in a draw.");
             logicAmountChange = 1;
         }
-        
+                
         for(int[] turn : moveHistory)
         {
             if(turn[0]!=0)
             {
                 boardToUpdate = BoardStateChecker.getKnownBoardStates().get(turn[0]);
-                boardToUpdate.changeLikelihood(turn[1],logicAmountChange);
+                boardToUpdate.changeLikelihood(turn[1],
+                        logicAmountChange, 
+                        ((Game_HvC)theGame).getComputerPlayer().rank);
             }
         }
 
