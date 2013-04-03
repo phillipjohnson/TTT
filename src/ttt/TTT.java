@@ -37,69 +37,111 @@ public class TTT
 {    
     public static void main(String[] args)
     {
-        TTT tic = new TTT();
-        int gameType = tic.getGameType();
+        newGame();
         
+    }
+    
+    private static void newGame()
+    {
         Game game = null;
         
-        switch(gameType)
+        System.out.println("Welcome to a MENACE-style Java implementation of" + 
+                " Tic-Tac-Toe.\n");
+        
+        Player playerAlpha = getPlayerType(playerRank.ALPHA);
+        Player playerBeta = getPlayerType(playerRank.BETA);
+        
+        //TODO: Need a better way to instantiate a Game
+        if(playerAlpha instanceof HumanPlayer)
         {
-            case 1:
-                game = new Game_HvC();
-                break;
-            case 2:
-                game = new Game_CvC(ComputerLogic.LEARNER,ComputerLogic.RANDOM);
-                break;
-            case 3:
-                game = new Game_CvC(ComputerLogic.LEARNER,ComputerLogic.LEARNER);
-                break;
-            default:
-                assert(false) : gameType;
-                break;
+            if(playerBeta instanceof HumanPlayer)
+            {
+                System.out.println("Play type not yet supported");
+                System.exit(0);
+            }
+            else
+            {
+                game = new Game_HvC((ComputerPlayer)playerBeta);
+            }
         }
-
+        else
+        {
+            if(playerBeta instanceof HumanPlayer)
+            {
+                game = new Game_HvC((ComputerPlayer)playerAlpha);
+            }
+            else
+            {
+                game = new Game_CvC((ComputerPlayer)playerAlpha,
+                        (ComputerPlayer)playerBeta);
+            }
+        }
+        
         if(game != null)
         {
             game.play();
         }
-        
     }
+    /**
+     * Determines what kind of player the user wants
+     * @param rank  Designation to keep players separate
+     * @return      The selected Player type
+     */
     
-    public int getGameType()
+    private static Player getPlayerType(playerRank rank)
     {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to a MENACE-style Java implementation of" + 
-                " Tic-Tac-Toe.\n");
-        System.out.println("Please select your method of play: \n\n" +
-                "(1) Human vs. Learning Computer\n" +
-                "(2) Learning Computer vs. Random Computer Simulation\n" +
-                "(3) Learning Computer vs. Learning Computer Simulation");
+        System.out.println("Please select the player type: \n\n" +
+                "(1) Human\n" +
+                "(2) Random Computer\n" +
+                "(3) Optimal Computer\n" +
+                "(4) Learning Computer (MENACE)");
         
-        int gameType = -1;
-        boolean validGameType = false;
+        int playerTypeChoice = -1;
+        boolean validPlayerType = false;
         
-        while(!validGameType)
+        while(!validPlayerType)
         {
             if(!sc.hasNextInt())
             {
                 System.out.println("Please enter a valid number.");
-                validGameType = false;
+                validPlayerType = false;
             }
             else
             {
-                gameType = sc.nextInt();
-                if(gameType < 0 || gameType > 3)
+                playerTypeChoice = sc.nextInt();
+                if(playerTypeChoice < 0 || playerTypeChoice > 4)
                 {
                     System.out.println("Please enter a valid game type.");
-                    validGameType = false;
+                    validPlayerType = false;
                 }
                 else
                 {
-                    validGameType = true;
+                    validPlayerType = true;
                 }
             }
         }
         
-        return gameType;
+        Player p = null;
+        
+        switch(playerTypeChoice)
+        {
+            case 1:
+                p = new HumanPlayer(rank);
+                break;
+            case 2:
+                p = new ComputerPlayer_Random(rank);
+                break;
+            case 3:
+                p = new ComputerPlayer_Optimal(rank);
+                break;
+            case 4:
+                p = new ComputerPlayer_Learner(rank);
+                break;
+            default:
+               assert false: playerTypeChoice;
+        }
+        
+        return p;
     }
 }

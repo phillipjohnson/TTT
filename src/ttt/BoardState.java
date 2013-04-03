@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class BoardState
 {
-    private static int idCount = 15;
+    public static int idCount = 15;
     private int id;
             
     private byte[] state;

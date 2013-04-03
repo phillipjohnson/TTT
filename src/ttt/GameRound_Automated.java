@@ -1,28 +1,37 @@
 package ttt;
 
-import java.util.Arrays;
+import java.util.Random;
 
 /**
- *
+ *A game round in which two computers play each other
  * @author Phillip
  */
 public class GameRound_Automated extends GameRound
 {
-    
+    Random _r = new Random();
 
-    public GameRound_Automated(ComputerLogic player1logic, ComputerLogic player2Logic)
+
+    public GameRound_Automated(Game game)
     {       
-        theGame = new Game_CvC(player1logic,player2Logic);
+        super(game);
     }
 
     @Override
     public void playRound()
     {
-        player1 = ((Game_CvC)theGame).getPlayerOne();
-        player2 = ((Game_CvC)theGame).getPlayerTwo();
+        if(_r.nextBoolean())
+        {
+            player1 = ((Game_CvC)theGame).getPlayerAlpha();
+            player2 = ((Game_CvC)theGame).getPlayerBeta();
+        }
+        else
+        {
+            player2 = ((Game_CvC)theGame).getPlayerAlpha();
+            player1 = ((Game_CvC)theGame).getPlayerBeta();
+        }
         
         player1.setPlayerSymbol("X");
-        player1.setPlayerSymbol("Y");
+        player2.setPlayerSymbol("Y");
                
         currentState = BoardStateChecker.getKnownBoardStates().get(15);
         display = new byte[]{0,0,0,0,0,0,0,0,0};
@@ -35,6 +44,7 @@ public class GameRound_Automated extends GameRound
    @Override
     public void processEndOfRound()
     {
+        
 
         Player lastToPlay;
         if(turns % 2==0)
@@ -42,7 +52,7 @@ public class GameRound_Automated extends GameRound
         else
             lastToPlay = player1;
 
-        BoardState boardToUpdate;
+        BoardState boardToUpdate = null;
         int logicAmountChange_PlayerAlpha = 0;
         int logicAmountChange_PlayerBeta = 0;
 
@@ -50,17 +60,20 @@ public class GameRound_Automated extends GameRound
         {
             logicAmountChange_PlayerAlpha = 2;
             logicAmountChange_PlayerBeta = -1;
+            ((Game_CvC)theGame).increaseWins(playerRank.ALPHA);
             
         }
         else if(victory && lastToPlay.rank == playerRank.BETA) //Computer two wins
         {
             logicAmountChange_PlayerAlpha = -1;
             logicAmountChange_PlayerBeta = 2;
+            ((Game_CvC)theGame).increaseWins(playerRank.BETA);
         }
         else //Draw
         {
             logicAmountChange_PlayerAlpha = 1;
             logicAmountChange_PlayerBeta = 1;
+            ((Game_CvC)theGame).increaseDraws();
         }
         
         for(int[] turn : moveHistory)
@@ -74,6 +87,10 @@ public class GameRound_Automated extends GameRound
                         logicAmountChange_PlayerBeta, playerRank.BETA);
             }
         }
+        
+       System.out.println(victory + "\t" + 
+               lastToPlay.rank + "\t" + 
+               turns + "\t");
 
     }   
     

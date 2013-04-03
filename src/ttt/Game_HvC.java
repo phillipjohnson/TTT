@@ -3,8 +3,8 @@ package ttt;
 import java.util.Scanner;
 
 /**
- *
- * @author Phillip
+ * A game of Human vs. Computer
+ * @author Phillip Johnson
  */
 public class Game_HvC extends Game
 {
@@ -17,12 +17,13 @@ public class Game_HvC extends Game
      * Creates a new game with a human and computer player
      */
     
-    public Game_HvC()
+    public Game_HvC(ComputerPlayer computerPlayer)
     {
         humanPlayer = new HumanPlayer(playerRank.ALPHA);
-        computerPlayer = new ComputerPlayer(ComputerLogic.LEARNER, playerRank.BETA);
+        this.computerPlayer = computerPlayer;
     }
     
+    @Override
     public void play()
     {
         Scanner sc = new Scanner(System.in);
@@ -30,7 +31,7 @@ public class Game_HvC extends Game
         boolean continuePlay = true;
         while(continuePlay)
         {
-            GameRound round = new GameRound();
+            GameRound round = new GameRound(this);
             round.playRound();
             
             String choice = "";

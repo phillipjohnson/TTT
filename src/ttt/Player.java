@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 /**
  * Enum that stores a unique player designation for the whole game
- * @author Phillip Johnson
+ * 
  */
 enum playerRank
 {

@@ -1,42 +1,76 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ttt;
 
 /**
- *
- * @author Phillip
+ *A game of Computer vs. computer
+ * @author Phillip Johnson
  */
 public class Game_CvC extends Game
 {
-    private ComputerPlayer player1;
-    private ComputerPlayer player2;
+    private ComputerPlayer playerAlpha;
+    private ComputerPlayer playerBeta;
     
+    private int playerAlphaWins = 0;
+    private int playerBetaWins = 0;
+    private int draws = 0;
     
-    public Game_CvC(ComputerLogic player1logic, ComputerLogic player2logic)
+    public Game_CvC(ComputerPlayer playerAlpha, ComputerPlayer playerBeta)
     {
-        player1 = new ComputerPlayer(player1logic, playerRank.ALPHA);
-        player2 = new ComputerPlayer(player2logic, playerRank.BETA);
+        this.playerAlpha = playerAlpha;
+        this.playerBeta = playerBeta;
     }
     
-    public void play(){};
+    public void play()
+    {
+        for(int i = 0 ; i < 100; i++)
+        {
+            GameRound_Automated round = new GameRound_Automated(this);
+            round.playRound();
+        }
+        
+        printStats();
+    
+    }
     
     /**
      * Gets the first player
      * @return the first computer player instance
      */
-    public ComputerPlayer getPlayerOne()
+    public ComputerPlayer getPlayerAlpha()
     {
-        return player1;
+        return playerAlpha;
     }
     /**
      * Gets the seconds player
      * @return the second computer player instance
      */
-    public ComputerPlayer getPlayerTwo()
+    public ComputerPlayer getPlayerBeta()
     {
-        return player2;
+        return playerBeta;
+    }
+    
+    public void increaseDraws()
+    {
+        draws++;
+    }
+    
+    public void increaseWins(playerRank rank)
+    {
+        if(rank == playerRank.ALPHA)
+        {
+            playerAlphaWins++;
+        }
+        else if(rank == playerRank.BETA)
+        {
+            playerBetaWins++;
+        }
+    }
+    
+    private void printStats()
+    {
+        System.out.println("Player Alpa Wins:\t" + playerAlphaWins);
+        System.out.println("Player Beta Wins:\t" + playerBetaWins);
+        System.out.println("Draws:\t\t\t" + draws);
+        
     }
     
 }

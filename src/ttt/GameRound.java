@@ -17,19 +17,21 @@ public class GameRound
     
     int[][] moveHistory = new int[9][2];
 
-    static Game theGame = new Game_HvC();
+    static Game theGame;
+    
     GameLogic gameLogic;
     static BoardStateChecker computerLogic;
     
     byte[] display = new byte[9];
-    
+
     /**
      * Creates a new round.
      */
-    public GameRound()
+    public GameRound(Game game)
     {       
         gameLogic = new GameLogic();
         computerLogic = Player.boardStateChecker;
+        theGame = game;
     }
     /**
      * Sets up the details of the players for the round.
@@ -187,7 +189,7 @@ public class GameRound
                         ((Game_HvC)theGame).getComputerPlayer().rank);
             }
         }
-
+        
     }
     /**
      * Displays the current layout for the user

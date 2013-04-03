@@ -18,7 +18,7 @@ public class GameLogic
      * @return                      <code>true</code> if the game has been won
      *                              <code>false</code> if not
      */
-    public boolean checkWin(byte[] currentStateValues)
+    public static boolean checkWin(byte[] currentStateValues)
     {
         boolean victory = false;
         
